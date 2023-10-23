@@ -12,109 +12,95 @@
 # in more mathy lingo take the DOT product of the input and weight vectors and add a bais.
 # i will be implementing a couple of different activation functions mainly (sigmoid,tanh,relu,)
 
-from numpy.random import randint
+from numpy.random import uniform,randint
 from numpy import ndarray,exp
 import numpy as np
+
 
 
 # create a perceptron class
 
 class perceptron:
     def __init__(
-                    self,inputs:int,
+                    self,input_number:int,
+                    # which is this perceptron located
+                    layer:int,
                     activation_function:str
                  ) -> None:
         
 
         # make sure that the values given are correct
-        assert isinstance(inputs,int),"inputs must be an integer represeting the number of inputs"
+        assert isinstance(input_number,int),"input_number must be an integer represeting the number of input_number"
+        assert isinstance(layer,int),"layer must be an integer represeting which layer is this perceptron at"
         assert isinstance(activation_function,str),"activation function must be a string"
-        assert activation_function in ["sigmoid","tanh","relu","step"],"activation function must be one of the following: sigmoid,tanh,relu,step"
+        assert activation_function in ["sigmoid","tanh","relu","none"],"activation function must be one of the following: sigmoid,tanh,relu,step"
 
-
-        self.inputs = inputs
+        self.input_number = input_number
         self.activation_function = activation_function
-        self.weights = None
-        self.bias = None
+        # initialize random values for weights and biases
+        self.weights = randint(5,10,size=(self.input_number,))
+        self.bias = randint(5,10)
+        self.layer = layer
+        self.inputs = None
+        self.raw_output = None
 
 
-    # set the weights either randomly or by the given values in the following way
-    # weights should be a 2 dimensional array with each row being the input and each column being the weight index
-    # so the input for weight1 of input2 is weights[1][0]
-    # and the input for weight2 of input2 is weights[1][1]
-    # and so on
-
-    def set_weights(self,weights:list[float] = None) -> None:
-        # not weights were provided so we will generate them randomly
-        if weights is None:
-            self.weights = randint(-10,10,size=(self.inputs,))
-            return
-        # if a set of weight is given we have to make sure that it is the correct shape and type
-        # type should be an ndarray 
-        # size should be (inputs,1)
-        # since we have inputs number of rows and 1 weight for each input
-
-        assert isinstance(weights,ndarray),"weights must be a ndarray"
-        assert weights.shape == (self.inputs,),"weights must be a ndarray of shape (inputs,)"
-
-        self.weights = weights
-
-
-
-    # get the current weight of the perceptron
-    def get_weights(self) -> ndarray:
-        return self.weights
+    def __repr__(self) -> str:
+        return f"perceptron with {self.inputs} inputs and {self.activation_function} activation function"
     
 
-    def set_bias(self,bias:float = None) -> None:
-
-        if bias is None : self.bias = randint(-10,10) ; return
-        # make sure that the bias is a float
-        assert isinstance(bias,float),"bias must be a float"
-        self.bias = bias
-
-
-    def get_bias(self):
-        return self.bias
-    
-    def calculate(self,inputs:list[float]) -> float :
-        # make sure that input is the correct size and type
-        assert isinstance(inputs,list),"inputs must be a list"
-        assert len(inputs) == self.inputs,"inputs must be of the same size as the number of inputs"
-        # make sure that weight and biases are set
-        assert self.weights is not None,"weights must be set"
-        assert self.bias is not None,"bias must be set"
-
-        # we now calculate the value of the perceptron
-        raw_value = sum(w*i for w,i in zip(self.weights,inputs)) + self.bias
-        if self.activation_function == "sigmoid": return self.sigmoid(raw_value)
-        if self.activation_function == "tanh": return self.tanh(raw_value)
-        if self.activation_function == "relu": return self.relu(raw_value)
-        if self.activation_function == "step": return self.step(raw_value)
-        
-
-
-
-
-
-    def step(self,x:float) -> float:
-        return 1 if x >= 0 else 0
     def tanh(self,x:float) -> float:
         exponential = np.exp(2*x) 
         return (exponential - 1)/(exponential + 1)
+    def tanh_derivative(self) -> float:
+        return 1 - self.output**2
     def sigmoid(self,x:float) -> float:
         return 1/ (1 + exp(-x))
+    def sigmoid_derivative(self) -> float:
+        return self.output*(1-self.output)
+    
+    # by default i implemented leaky RELU to avoid neurons from dying
     def relu(self,x:float) -> float:
-        return max(0,x)
+        return x if x > 0 else 0.1 * x
+    # we will return 0 for the derivative at 0 though it is mathematically not differentiable at 0 but in practice that works
+    def relu_derivative(self,x:float) -> float:
+        return 1 if x > 0 else 0.1
     
-
-
-
-
-
-        
+    def output_derivative(self) -> float:
+        if self.activation_function == "sigmoid": return self.sigmoid_derivative()
+        if self.activation_function == "tanh": return self.tanh_derivative()
+        if self.activation_function == "relu": return self.relu_derivative()
+        if self.activation_function == "none": return 1
     
+    def forward(self,inputs:list[float]) -> float :
+        # make sure that input is the correct size and type
+        assert len(inputs) == self.input_number,"inputs must be of the same size as the number of inputs"
+
+        if not isinstance(inputs,ndarray):
+            inputs = np.array(inputs)
+        # set the inputs for the object as these ones
+        self.inputs = inputs
+
+        # we now calculate the value of the perceptron
+        # it is the dot product of the inputs and weights
+        raw_value = np.dot(self.weights,inputs) + self.bias
+
+        # set the raw output of the perceptron
+        # this will be useful when finding the derivative 
+        self.raw_output = raw_value
+
+        # use the appropriate activation function
+        if self.activation_function == "sigmoid": self.output = self.sigmoid(raw_value)
+        elif self.activation_function == "tanh": self.output = self.tanh(raw_value)
+        elif self.activation_function == "relu": self.output = self.relu(raw_value)
+        elif self.activation_function == "none": self.ouput = raw_value
+        return self.output
 
 
+    def backward(self,previous_derivatives:(float,int)) -> ndarray:
+        # previous derivatives is the multiplication of the chain rule up until this point
+        # next we will multiply the previous derivatives with the derivative of the activation function
+        # then we will multiply that with the inputs to the gradient since the derivative of w_i is x_i
 
-        
+        # return (weight grads , bias gradient)
+        return previous_derivatives * self.output_derivative() * self.inputs , previous_derivatives * self.output_derivative() * 1
