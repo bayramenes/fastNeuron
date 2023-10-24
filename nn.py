@@ -19,13 +19,6 @@ DATA, LABELS = datasets.make_classification(n_samples = 1000
                            ,class_sep = 2
                            ,random_state = 7
                            )
-# DATA,LABELS = datasets.make_regression(
-#                                 n_samples = 500
-#                                 ,n_features = 1
-#                                 ,noise = 50
-#                                 ,random_state = 20
-#                             )
-
 
 def gradient_descent(data:list[list[(int,float)]],labels:list[(int,float)],learning_rate:float = 0.03 , epochs:int = 1000):
     # go through each epoch
