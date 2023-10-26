@@ -12,7 +12,7 @@
 # in more mathy lingo take the DOT product of the input and weight vectors and add a bais.
 # i will be implementing a couple of different activation functions mainly (sigmoid,tanh,relu,)
 
-from numpy.random import randint
+from numpy.random import randint,random
 from numpy import ndarray,exp
 import numpy as np
 
@@ -29,8 +29,8 @@ class perceptron:
         self.input_number = input_number
         self.activation_function = activation_function
         # initialize random values for weights and biases
-        self.weights = randint(5,10,size=(self.input_number,))
-        self.bias = randint(5,10)
+        self.weights = None
+        self.bias = None
 
         # store some values so that we can compute derivatives and so on faster
         # all values will be initialized to 0
@@ -71,11 +71,8 @@ class perceptron:
 
     def forward(self,inputs:list[float]) -> float :
         # make sure that input is the correct size and type
-        # assert len(inputs) == self.input_number,"inputs must be of the same size as the number of inputs"
 
-        # make sure that inputs is a numpy array 
-        if not isinstance(inputs,ndarray):
-            inputs = np.array(inputs)
+        assert isinstance(inputs,ndarray),"inputs must be of type ndarray"
         # set the inputs for the object as these ones given
         self.inputs = inputs
 

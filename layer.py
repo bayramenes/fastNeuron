@@ -11,6 +11,8 @@ import numpy as np
 
 
 
+
+
 class layer:
 
     # initialize the layer
@@ -40,19 +42,31 @@ class layer:
         # initialize as many perceptrons as given
         self.perceptrons = [perceptron(input_size, activation) for _ in range(units)]
 
+        # initialize the weight of the perceptrons according to Xavier/Glorot Initialization
+        sd = np.sqrt(6/(input_size + units))
+
+
+        # a matrix that has all of the values of the weights of all of the units
+        self.weights = np.random.normal(0,sd,size=(input_size,units))
+        self.biases = np.random.normal(0,sd,size=(1,units))
+
+        # # by default i will use the normal distribution
+        # for perceptron_unit in self.perceptrons:
+        #     perceptron_unit.weights = np.random.normal(0,sd,size=(input_size,1))
+        #     perceptron_unit.bias = np.random.normal(0,sd,size=1)
+
 
     def __repr__(self) -> str:
         return f"layer with {self.units} units, {self.input_size} inputs and {self.activation} activation function"
     
+    @staticmethod
+    def sigmoid(z):
+        return 1/(1+np.exp(-z))
 
     # forward propagation
     def forward(self,X:np.ndarray) -> np.ndarray:
+        return layer.sigmoid(X @ self.weights + self.biases)
 
-        # return the list of outputs
-
-        # double square bracket so that it is a 2d array hence a matrix
-        self.outputs = np.array([perceptron_unit.forward(X) for perceptron_unit in self.perceptrons],)
-        return self.outputs
     
     def backward(self,pervious_derivatives:float):
         """
