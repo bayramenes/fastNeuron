@@ -50,12 +50,6 @@ class layer:
         self.weights = np.random.normal(0,sd,size=(input_size,units))
         self.biases = np.random.normal(0,sd,size=(1,units))
 
-        # # by default i will use the normal distribution
-        # for perceptron_unit in self.perceptrons:
-        #     perceptron_unit.weights = np.random.normal(0,sd,size=(input_size,1))
-        #     perceptron_unit.bias = np.random.normal(0,sd,size=1)
-
-
     def __repr__(self) -> str:
         return f"layer with {self.units} units, {self.input_size} inputs and {self.activation} activation function"
     
