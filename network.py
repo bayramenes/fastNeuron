@@ -47,19 +47,65 @@ class neural_network:
         wgrads = []
         bgrads = []
         for index in range(len(self.layers) - 1 , -1 ,-1):
-            layer_wgrads = np.matmul(self.outputs[index].T,initial_derivatives)
-            layer_bgrads = np.sum(initial_derivatives , axis= 0)
+            layer_wgrads = 1/ initial_derivatives.shape[0] * np.matmul(self.outputs[index].T,initial_derivatives)
+            layer_bgrads = 1/ initial_derivatives.shape[0] * np.sum(initial_derivatives , axis= 0)
             # layer_igrads = initial_derivatives * self.layers[index].weights
             # for now i am assuming that we are only going to use the sigmoid function as an activation function
-            print(f"self.outputs[index].shape:{self.outputs[index].shape}")
             initial_derivatives = np.matmul(initial_derivatives,self.layers[index].weights.T) * (self.outputs[index] * (1 - self.outputs[index]))
+            if self.layers[index].activation == "sigmoid": initial_derivatives *= self.outputs[index] * (1 - self.outputs[index])
+            elif self.layers[index].activation == "relu": initial_derivatives *= (self.outputs[index] > 0)
+            elif self.layers[index].activation == "tanh": initial_derivatives *= 1 - self.outputs[index] * self.outputs[index]
+                
             wgrads = [layer_wgrads] + wgrads
             bgrads = [layer_bgrads] + bgrads
-            print(f"propogated through layer{index}")
+            
 
 
 
         return wgrads , bgrads
+    
+
+
+    def fit(self,X:np.ndarray,Y:np.ndarray,learning_rate:float,epochs:int):
+
+        costs=[]
+
+        M = X.shape[0]
+        N = X.shape[1]
+        for epoch in range(epochs):
+            outputs = self.forward(X)
+
+
+            # binary cross-entropy
+            cost = -1 / M * np.sum(Y * np.log(outputs) + (1 - Y) * np.log(1 - outputs))
+
+
+            accuracy = ((M - np.sum(((outputs >= 0.5).astype(int) != Y).astype(int))) / M ) * 100
+            if epoch % 1000 == 0:
+                print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
+            costs.append(cost)
+
+
+
+            # get the gradients
+            wgrads , bgrads = self.backward(outputs - Y)
+            # update the weights and biases
+            for index,layer in enumerate(self.layers):
+                layer.weights -= learning_rate * wgrads[index]
+                layer.biases -= learning_rate * bgrads[index]
+
+
+
+        return self,costs
+    
+
+
+    def predict(self,X:np.ndarray):
+        return (self.forward(X) >= 0.5).astype(int)
+    
+
+
+            
 
 
 

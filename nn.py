@@ -3,9 +3,8 @@ import numpy as np
 from perceptron import perceptron
 from sklearn import datasets
 from layer import layer
-
-
-# node = perceptron(2,0,"sigmoid")
+from network import neural_network
+import matplotlib.pyplot as plt
 
 
 
@@ -21,28 +20,44 @@ DATA, LABELS = datasets.make_classification(n_samples = 1000
                            ,random_state = 7
                            )
 
+# # generate random data
+DATA, LABELS = datasets.make_circles(
+                                n_samples = 300,
+                                noise=0.03
+                           )
+
+LABELS = np.reshape(LABELS,newshape=(LABELS.shape[0],1))
+M = DATA.shape[0]
+N = DATA.shape[1]
+
+# create a model
+model  = neural_network()
+model  = model.sequential(
+    [
+        layer(2,20,"relu"),
+        # layer(20,10,"sigmoid"),
+        layer(20,1,"sigmoid")
+    ]
+)
+
+# train model
+model,costs = model.fit(DATA,LABELS,0.03,10000)
+
+# plot cost
+plt.plot(costs)
 
 
-def main():
-    l_0 = layer(input_size=2,units=3,activation="sigmoid")
-    l_1 = layer(input_size=3,units=1,activation="sigmoid")
+# plot decision boundary
+h = 0.02
+x_min , x_max = DATA[:,0].min() - 1 , DATA[:,0].max() + 1
+y_min , y_max = DATA[:,1].min() - 1 , DATA[:,1].max() + 1
+xx , yy = np.meshgrid(np.linspace(x_min,x_max,100),np.linspace(y_min,y_max,100))
+np.linspace(y_min,y_max,100)
+x_in = np.c_[xx.ravel(),yy.ravel()]
+y_pred = model.predict(x_in).reshape(xx.shape)
 
-    l_0.forward(DATA[0])
-    pprint(l_0.outputs())
-    l_1.forward(l_0.outputs())
-    pprint(l_1.outputs())
-
-
-
-
-
-
-
-if __name__ == "__main__":
-    main()
-    # gradient_descent(DATA,LABELS)
-    # test()
-
+plt.contourf(xx,yy,y_pred,cmap= plt.cm.RdYlBu)
+plt.scatter(DATA[:,0],DATA[:,1],c = LABELS)
 
 
 

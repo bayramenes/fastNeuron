@@ -43,7 +43,9 @@ class layer:
         self.perceptrons = [perceptron(input_size, activation) for _ in range(units)]
 
         # initialize the weight of the perceptrons according to Xavier/Glorot Initialization
-        sd = np.sqrt(6/(input_size + units))
+        sd = np.sqrt(1/(input_size + units))
+        if activation == "sigmoid": sd *= np.sqrt(6)
+        elif activation == "relu": sd *= np.sqrt(2)
 
 
         # a matrix that has all of the values of the weights of all of the units
@@ -56,10 +58,20 @@ class layer:
     @staticmethod
     def sigmoid(z):
         return 1/(1+np.exp(-z))
+    @staticmethod
+    def tanh(z):
+        return np.tanh(z)
+    @staticmethod
+    def relu(z):
+        return np.maximum(0,z)
 
     # forward propagation
     def forward(self,X:np.ndarray) -> np.ndarray:
-        return layer.sigmoid(X @ self.weights + self.biases)
+        raw = X @ self.weights + self.biases
+        if self.activation == "sigmoid": return layer.sigmoid(raw)
+        if self.activation == "tanh": return layer.tanh(raw)
+        if self.activation == "relu": return layer.relu(raw)
+
 
     
     def backward(self,pervious_derivatives:float):
