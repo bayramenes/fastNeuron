@@ -53,7 +53,7 @@ class neural_network:
             # for now i am assuming that we are only going to use the sigmoid function as an activation function
             initial_derivatives = np.matmul(initial_derivatives,self.layers[index].weights.T) * (self.outputs[index] * (1 - self.outputs[index]))
             if self.layers[index].activation == "sigmoid": initial_derivatives *= self.outputs[index] * (1 - self.outputs[index])
-            elif self.layers[index].activation == "relu": initial_derivatives *= (self.outputs[index] > 0)
+            elif self.layers[index].activation == "relu": initial_derivatives *= (self.outputs[index] > 0).astype(int)
             elif self.layers[index].activation == "tanh": initial_derivatives *= 1 - self.outputs[index] * self.outputs[index]
                 
             wgrads = [layer_wgrads] + wgrads
@@ -81,7 +81,7 @@ class neural_network:
 
 
             accuracy = ((M - np.sum(((outputs >= 0.5).astype(int) != Y).astype(int))) / M ) * 100
-            if epoch % 1000 == 0:
+            if epoch % 10000 == 0:
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
             costs.append(cost)
 
@@ -93,6 +93,9 @@ class neural_network:
             for index,layer in enumerate(self.layers):
                 layer.weights -= learning_rate * wgrads[index]
                 layer.biases -= learning_rate * bgrads[index]
+        accuracy = ((M - np.sum(((outputs >= 0.5).astype(int) != Y).astype(int))) / M ) * 100
+        print(f" cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
+
 
 
 
