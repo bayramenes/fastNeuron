@@ -72,20 +72,21 @@ class neural_network:
 
         M = X.shape[0]
         N = X.shape[1]
+        print(f"M : {M}")
+        print(f"M//10 : {epochs//10}")
+        print(f"M//100 : {epochs//100}")
         for epoch in range(epochs):
             outputs = self.forward(X)
 
 
             # binary cross-entropy
-            cost = -1 / M * np.sum(Y * np.log(outputs) + (1 - Y) * np.log(1 - outputs))
 
-
-            accuracy = ((M - np.sum(((outputs >= 0.5).astype(int) != Y).astype(int))) / M ) * 100
-            if epoch % 10000 == 0:
+            if epoch % (epochs // 100) == 0:
+                cost = -1 / M * np.sum(Y * np.log(outputs) + (1 - Y) * np.log(1 - outputs))
+                costs.append(cost)
+            if epoch % (epochs // 10) == 0:
+                accuracy = ((M - np.sum(((outputs >= 0.5).astype(int) != Y).astype(int))) / M ) * 100
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
-            costs.append(cost)
-
-
 
             # get the gradients
             wgrads , bgrads = self.backward(outputs - Y)
