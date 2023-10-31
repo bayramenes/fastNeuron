@@ -1,6 +1,7 @@
 # this is a class that initiates a neural network and gives high level control over
 # it
-
+from loss_funcs import Cost_Functions
+from Optimizers import Optimizers
 from layer import layer
 import numpy as np
 class neural_network:
@@ -10,6 +11,11 @@ class neural_network:
         self.layers = []
         self.input_size = None
         self.outputs = []
+
+        # default optimizer and loss functions
+        self.optimizer = Optimizers.BatchGradientDescent
+        self.cost = Cost_Functions.MSE
+
 
     # accept a list of layers and set as the layers of the neural network
     def sequential(self,layers:list[layer]):
@@ -40,8 +46,6 @@ class neural_network:
         # NOTE: this algorithm can be implemented using recursion or using iterations
         #  i chose to use iterations for performance purposes...
 
-
-
         # since this is called backpropagation we have to go backwards through the layers
 
         wgrads = []
@@ -51,7 +55,7 @@ class neural_network:
             layer_bgrads = 1/ initial_derivatives.shape[0] * np.sum(initial_derivatives , axis= 0)
             # layer_igrads = initial_derivatives * self.layers[index].weights
             # for now i am assuming that we are only going to use the sigmoid function as an activation function
-            initial_derivatives = np.matmul(initial_derivatives,self.layers[index].weights.T) * (self.outputs[index] * (1 - self.outputs[index]))
+            initial_derivatives = np.matmul(initial_derivatives,self.layers[index].weights.T)
             if self.layers[index].activation == "sigmoid": initial_derivatives *= self.outputs[index] * (1 - self.outputs[index])
             elif self.layers[index].activation == "relu": initial_derivatives *= (self.outputs[index] > 0).astype(int)
             elif self.layers[index].activation == "tanh": initial_derivatives *= 1 - self.outputs[index] * self.outputs[index]
@@ -60,10 +64,10 @@ class neural_network:
             bgrads = [layer_bgrads] + bgrads
             
 
-
-
         return wgrads , bgrads
     
+    def compile(optimizer:Optimizers ,Cost:Cost_Functions):
+        pass
 
 
     def fit(self,X:np.ndarray,Y:np.ndarray,learning_rate:float,epochs:int):
@@ -76,24 +80,34 @@ class neural_network:
         print(f"M//10 : {epochs//10}")
         print(f"M//100 : {epochs//100}")
         for epoch in range(epochs):
+
+            # get the outputs
             outputs = self.forward(X)
 
+            # get the result depending on the optimizer
+            wgrads , bgrads = self.backward(outputs - Y)
 
-            # binary cross-entropy
+            # update the weights and biases
+            for index,layer in enumerate(self.layers):
+                layer.weights -= learning_rate * wgrads[index]
+                layer.biases -= learning_rate * bgrads[index]
+
+
+
+
+            # print details about the training process
 
             if epoch % (epochs // 100) == 0:
+                # binary cross-entropy
                 cost = -1 / M * np.sum(Y * np.log(outputs) + (1 - Y) * np.log(1 - outputs))
                 costs.append(cost)
             if epoch % (epochs // 10) == 0:
                 accuracy = ((M - np.sum(((outputs >= 0.5).astype(int) != Y).astype(int))) / M ) * 100
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
-            # get the gradients
-            wgrads , bgrads = self.backward(outputs - Y)
-            # update the weights and biases
-            for index,layer in enumerate(self.layers):
-                layer.weights -= learning_rate * wgrads[index]
-                layer.biases -= learning_rate * bgrads[index]
+
+
+
         accuracy = ((M - np.sum(((outputs >= 0.5).astype(int) != Y).astype(int))) / M ) * 100
         print(f" cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
