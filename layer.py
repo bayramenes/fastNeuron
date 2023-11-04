@@ -5,12 +5,7 @@
 # in other words it is a container for the perceptrons
 
 # import dependencies
-from perceptron import perceptron
 import numpy as np
-
-
-
-
 
 
 class layer:
@@ -35,12 +30,6 @@ class layer:
         self.units = units
         self.activation = activation
         self.outputs = None
-
-
-
-
-        # initialize as many perceptrons as given
-        self.perceptrons = [perceptron(input_size, activation) for _ in range(units)]
 
         # initialize the weight of the perceptrons according to Xavier/Glorot Initialization
         sd = np.sqrt(1/(input_size + units))
@@ -71,53 +60,11 @@ class layer:
     # forward propagation
     def forward(self,X:np.ndarray) -> np.ndarray:
         raw = X @ self.weights + self.biases
+        # print(raw)
         if self.activation == "sigmoid": return layer.sigmoid(raw)
         elif self.activation == "tanh": return layer.tanh(raw)
         elif self.activation == "relu": return layer.relu(raw)
         elif self.activation == "leaky-relu": return layer.leaky_relu(raw)
-    
-
-
-    
-    # def backward(self,pervious_derivatives:float):
-    #     """
-    #     this function returns three arrays
-
-    #     1. an array of the gradients of the weights
-    #     2. an array of the gradients of the biases
-    #     3. an array of the graidents of the inputs
-
-    #     """
-    #     # we will store weight gradients in a 2d array where each column represents the grads of that particulat unit
-
-    #     weight_grads = np.array([
-    #         perceptron_unit.weight_grads(pervious_derivatives) for perceptron_unit in self.perceptrons
-    #     ])
-
-    #     # we will store bias gradients in a row vector where each column entry is gradient of the corresponding unit bias
-
-    #     bias_grads = np.array(
-    #         [
-    #             perceptron_unit.bias_grad(pervious_derivatives) for perceptron_unit in self.perceptrons
-    #         ]
-    #     )
-
-
-    #     # we will store input gradient in a 2d array where each column represents the gradient of the corresponding input
-
-    #     input_grads = np.array(
-    #         [
-    #             perceptron_unit.input_grads(pervious_derivatives) for perceptron_unit in self.perceptrons
-    #         ]
-    #     )
-
-
-    #     return weight_grads , bias_grads , input_grads
-        
-    
-    def raw_outputs(self) -> np.ndarray:
-        return np.array([[perceptron_unit.raw_output for perceptron_unit in self.perceptrons]])
-        
 
 
     
