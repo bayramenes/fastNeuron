@@ -41,7 +41,7 @@ class neural_network:
         self.cost = Cost
         return self
 
-    def fit(self, X: np.ndarray, Y: np.ndarray, learning_rate: float, epochs: int):
+    def fit(self, X: np.ndarray, Y: np.ndarray, learning_rate: float, epochs: int,batch_size:int = 50):
         model, costs = self.optimizer(
             self,
             self.cost,
@@ -49,6 +49,7 @@ class neural_network:
             Y,
             learning_rate,
             epochs,
+            batch_size = batch_size
         )
         return model, costs
     
@@ -57,12 +58,11 @@ class neural_network:
         print a summary of the model including weight biases and activations
         """
         print("Summary of the neural network")
+        print()
+        print('-'*50)
+        print()
         for layer_ in self.layers:
             print(layer_)
-            print("weights:")
-            print(layer_.weights)
-            print("biases:")
-            print(layer_.biases)
             print()
             print('-'*50)
             print()
