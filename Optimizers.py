@@ -63,14 +63,16 @@ class MiniBatchGradientDescent:
 
 
 
-                    # update the values of the weights
+                    # # update the values of the weights
 
-                    # what we want to do it multiply each initial derivative with the corresponding input and then take the average
-                    # this will give us the same thing but faster
-                    model.layers[index].weights = model.layers[index].weights - learning_rate *  np.matmul(model.outputs[index].T,initial_derivatives)
+                    # # what we want to do it multiply each initial derivative with the corresponding input and then take the average
+                    # # this will give us the same thing but faster
+                    # model.layers[index].weights = model.layers[index].weights - learning_rate *  np.matmul(model.outputs[index].T,initial_derivatives)
 
-                    # we have to multiply the initial derivatives by 1 to get the bias gradient and then average so that's we are doing
-                    model.layers[index].biases = model.layers[index].biases - learning_rate * np.sum(initial_derivatives , axis= 0)
+                    # # we have to multiply the initial derivatives by 1 to get the bias gradient and then average so that's we are doing
+                    # model.layers[index].biases = model.layers[index].biases - learning_rate * np.sum(initial_derivatives , axis= 0)
+
+                    model.layers[index].backward(initial_derivatives,learning_rate)
 
                     # to go the next layer update the initial derivatives to contain the derivatives with respect to the inputs of that layer
                     # this is important so that we can update the weights of the previous layer

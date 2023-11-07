@@ -8,7 +8,45 @@
 import numpy as np
 
 
-class layer:
+
+
+class LayerNorm:
+    """
+    a layer normalization layer that takes the outputs of the previous layer and normalize them sample by sample
+    """
+    def __init__(
+                    self,
+                    input_size:int,
+                    epsilon:float = 1e-6,
+                    gamma:np.ndarray = None,
+                    beta:np.ndarray = None,
+                
+                ) -> None:
+        self.input_size = input_size
+        self.epsilon = epsilon
+        self.gamma = gamma
+        self.beta = beta
+    
+
+
+    def forward(self,X:np.ndarray):
+        """
+        forward pass of the layer
+
+        we will calculate the mean and variance of each input sample and normalize each sample and return the normalized samples
+        X: input data
+        returns: normalized data
+        """
+        mean = np.mean(X,axis=0,keepdims=True)
+        std = np.std(X,axis=0,keepdims=True)
+
+        # for now i will not use gamma and beta will look into them later
+        return (X - mean) / (std + self.epsilon)
+
+class Dense:
+    """
+    Dense layer or in other words fully connected layer where each input is connected to all of the outputs
+    """
 
     # initialize the layer
     def __init__(
@@ -29,7 +67,7 @@ class layer:
         self.input_size = input_size
         self.units = units
         self.activation = activation
-        self.outputs = None
+        self.inputs = None
 
         # initialize the weight of the perceptrons according to Xavier/Glorot Initialization
         sd = np.sqrt(1/(input_size + units))
@@ -95,10 +133,34 @@ class layer:
 
     # forward propagation
     def forward(self,X:np.ndarray) -> np.ndarray:
+        self.inputs = X
         raw = X @ self.weights + self.biases
-        if self.activation == "sigmoid": return layer.sigmoid(raw)
-        elif self.activation == "tanh": return layer.tanh(raw)
-        elif self.activation == "relu": return layer.relu(raw)
-        elif self.activation == "leaky-relu": return layer.leaky_relu(raw)
-        elif self.activation == "linear": return layer.linear(raw)
-        elif self.activation == "softmax": return layer.softmax(raw)
+        if self.activation == "sigmoid": return Dense.sigmoid(raw)
+        elif self.activation == "tanh": return Dense.tanh(raw)
+        elif self.activation == "relu": return Dense.relu(raw)
+        elif self.activation == "leaky-relu": return Dense.leaky_relu(raw)
+        elif self.activation == "linear": return Dense.linear(raw)
+        elif self.activation == "softmax": return Dense.softmax(raw)
+
+
+    def backward(
+                    self,
+                    initial_derivatives:np.ndarray,
+                    learning_rate:float,
+                 ) -> None:
+        """
+        backpropogation for this layer
+        i implemented it this way so that we can implement different layer types and always call .backward()
+        """
+
+
+        # update the values of the weights
+
+        # what we want to do it multiply each initial derivative with the corresponding input and then take the average
+        # this will give us the same thing but faster
+        self.weights = self.weights - learning_rate * np.matmul(self.inputs.T,initial_derivatives)
+
+        # we have to multiply the initial derivatives by 1 to get the bias gradient and then average so that's we are doing
+        self.biases = self.biases - learning_rate * np.sum(initial_derivatives,axis=0)
+
+        

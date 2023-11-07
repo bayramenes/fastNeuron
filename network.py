@@ -1,8 +1,8 @@
 # this is a class that initiates a neural network and gives high level control over
 # it
-from loss_funcs import *
-from Optimizers import *
-from layer import layer
+import Optimizers
+import loss_funcs as losses
+from layers import Dense
 import numpy as np
 
 
@@ -14,11 +14,11 @@ class neural_network:
         self.outputs = []
 
         # default optimizer and loss functions
-        self.optimizer = BatchGradientDescent()
-        self.cost = MSE()
+        self.optimizer = Optimizers.BatchGradientDescent()
+        self.cost = losses.MSE()
 
     # accept a list of layers and set as the layers of the neural network
-    def sequential(self, layers: list[layer]):
+    def sequential(self, layers: list[Dense]):
         self.layers = layers
         self.input_size = layers[0].input_size
         return self
@@ -41,7 +41,7 @@ class neural_network:
         self.cost = Cost
         return self
 
-    def fit(self, X: np.ndarray, Y: np.ndarray, learning_rate: float, epochs: int,batch_size:int = 50):
+    def fit(self, X: np.ndarray, Y: np.ndarray, learning_rate: float, epochs: int,batch_size:int = 50) -> tuple[object,list[np.float64]]:
         model, costs = self.optimizer(
             self,
             self.cost,
