@@ -22,7 +22,7 @@ class layer:
         # make sure values are correct
         assert isinstance(input_size,int),"input_number must be an integer represeting the number of input_number"
         assert isinstance(activation,str),"activation function must be a string"
-        assert activation in ["sigmoid","tanh","relu","none","leaky-relu"],"activation function must be one of the following: sigmoid,tanh,relu,step"
+        assert activation in ["sigmoid","tanh","relu","linear","leaky-relu","softmax"],"activation function must be one of the following: sigmoid,tanh,relu,linear,softmax"
 
 
         # save values to the object
@@ -46,27 +46,59 @@ class layer:
     
     @staticmethod
     def sigmoid(z):
+        """
+        sigmoid activation function
+        z: input value
+        returns: sigmoid activation value of z
+        """
         return 1/(1+np.exp(-z))
     @staticmethod
     def tanh(z):
+        """
+        tanh activation function
+        z: input value
+        returns: tanh activation value of z
+        """
         return np.tanh(z)
     @staticmethod
     def relu(z):
+        """
+        relu activation function
+        z: input value
+        returns: relu activation value of z
+        """
         return np.maximum(0,z)
     @staticmethod
     def leaky_relu(z):
+        """
+        leaky relu activation function
+        z: input value
+        returns: leaky relu activation value of z
+        """
         return np.maximum(0.1*z,z)
+    @staticmethod
+    def linear(z):
+        """
+        linear activation function (no activation)
+        z: input value
+        returns: linear activation value of z
+        """
+        return z
+    @staticmethod
+    def softmax(z):
+        """
+        softmax activation function - usually used for the last layer as a probability distribution in classification
+        z: input value
+        returns: softmax activation value of z
+        """
+        return np.exp(z)/np.sum(np.exp(z))
 
     # forward propagation
     def forward(self,X:np.ndarray) -> np.ndarray:
         raw = X @ self.weights + self.biases
-        # print(raw)
         if self.activation == "sigmoid": return layer.sigmoid(raw)
         elif self.activation == "tanh": return layer.tanh(raw)
         elif self.activation == "relu": return layer.relu(raw)
         elif self.activation == "leaky-relu": return layer.leaky_relu(raw)
-
-
-    
-
-
+        elif self.activation == "linear": return layer.linear(raw)
+        elif self.activation == "softmax": return layer.softmax(raw)
