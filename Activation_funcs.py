@@ -82,11 +82,12 @@ class softmax:
         return self.output
     
     def derivative(self):
-        # calculate the jacobian for each training example
-        J = -self.output[...,None] * self.output[:,None,:]
-        iy,ix = np.diag_indices_from(J[0])
-        J[:,iy,ix] = self.output * (1 - self.output)
-        return J.sum(axis=1)
+        # # calculate the jacobian for each training example
+        # J = -self.output[...,None] * self.output[:,None,:]
+        # iy,ix = np.diag_indices_from(J[0])
+        # J[:,iy,ix] = self.output * (1 - self.output)
+        # return J.sum(axis=1)
+        return 1
     
 
 
