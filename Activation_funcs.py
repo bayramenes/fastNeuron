@@ -82,11 +82,10 @@ class softmax:
         return self.output
     
     def derivative(self):
-        # # calculate the jacobian for each training example
-        # J = -self.output[...,None] * self.output[:,None,:]
-        # iy,ix = np.diag_indices_from(J[0])
-        # J[:,iy,ix] = self.output * (1 - self.output)
-        # return J.sum(axis=1)
+        # since softmax is only used with categorical cross entropy loss and because it is hard to 
+        # get an easy derivative for softmax alone and instead it is pretty simple to get a derivative for categorical cross entropy with 
+        # respect to the raw outputs immediatly because of the simplification that occurs i will just return 1 and let
+        # the derivative of categorical cross entropy handle the rest
         return 1
     
 

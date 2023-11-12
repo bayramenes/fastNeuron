@@ -63,7 +63,8 @@ class CategoricalCrossEntropy:
         https://towardsdatascience.com/derivative-of-the-softmax-function-and-the-categorical-cross-entropy-loss-ffceefc081d1
         """
 
-        # return labels / output
+        # this is the derivative of categorical cross entropy with respect to the raw outputs
+        # i have done it this way because it is easier
         return output - labels
 
 
