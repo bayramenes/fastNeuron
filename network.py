@@ -30,6 +30,7 @@ class neural_network:
             inputs = layer_.forward(inputs)
         # we have to add the outputs of the last layer manually
         self.outputs.append(inputs)
+
         return inputs
 
     def get_weights(self):

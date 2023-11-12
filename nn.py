@@ -1,8 +1,7 @@
 from pprint import pprint
 import numpy as np
-from perceptron import perceptron
 from sklearn import datasets
-from layer import layer
+import layers
 from network import neural_network
 import matplotlib.pyplot as plt
 

@@ -2,6 +2,8 @@
 
 
 import numpy as np
+import Activation_funcs as activations
+
 class MiniBatchGradientDescent:
 
     """
@@ -55,35 +57,23 @@ class MiniBatchGradientDescent:
                 output = model.forward(mini_batch)
 
                 # initialize derivatives that will be used to update layers one by one
-                initial_derivatives = loss.initial_derivative(output,label)
+                initial_derivatives = model.layers[-1].activation.derivative() * loss.derivative(output,label)
 
 
                 # since this is called backpropagation we have to go backwards through the layers
+
                 for index in range(len(model.layers) - 1 , -1 ,-1):
 
 
 
-                    # # update the values of the weights
-
-                    # # what we want to do it multiply each initial derivative with the corresponding input and then take the average
-                    # # this will give us the same thing but faster
-                    # model.layers[index].weights = model.layers[index].weights - learning_rate *  np.matmul(model.outputs[index].T,initial_derivatives)
-
-                    # # we have to multiply the initial derivatives by 1 to get the bias gradient and then average so that's we are doing
-                    # model.layers[index].biases = model.layers[index].biases - learning_rate * np.sum(initial_derivatives , axis= 0)
+                    # # update the values of the weights and biases for the layer
 
                     model.layers[index].backward(initial_derivatives,learning_rate)
 
                     # to go the next layer update the initial derivatives to contain the derivatives with respect to the inputs of that layer
                     # this is important so that we can update the weights of the previous layer
                     initial_derivatives = np.matmul(initial_derivatives,model.layers[index].weights.T)
-
-                    # this is added to be able to implement leaky relu
-                    positive_values_derivative = (model.outputs[index] > 0).astype(int)
-                    if model.layers[index].activation == "sigmoid": initial_derivatives *= model.outputs[index] * (1 - model.outputs[index])
-                    elif model.layers[index].activation == "relu": initial_derivatives *= positive_values_derivative
-                    elif model.layers[index].activation == "leaky-relu": initial_derivatives *= np.where(positive_values_derivative == 0,0.1,positive_values_derivative)
-                    elif model.layers[index].activation == "tanh": initial_derivatives *= 1 - (model.outputs[index] ** 2)
+                    initial_derivatives *= model.layers[index-1].activation.derivative()
 
             if epoch % (epochs // 100) == 0:
                 cost = loss(model.forward(X),Y)
@@ -140,11 +130,11 @@ class StochasticGradientDescent:
 
                     # what we want to do it multiply each initial derivative with the corresponding input and then take the average
                     # this will give us the same thing but faster
-                    model.layers[index].weights = model.layers[index].weights - learning_rate *  np.matmul(model.outputs[index].T,initial_derivatives)
+                    # model.layers[index].weights = model.layers[index].weights - learning_rate *  np.matmul(model.outputs[index].T,initial_derivatives)
 
-
+                    model.layers[index].backward(initial_derivatives,learning_rate)
                     # we have to multiply the initial derivatives by 1 to get the bias gradient and then average so that's we are doing
-                    model.layers[index].biases = model.layers[index].biases - learning_rate * np.sum(initial_derivatives , axis= 0)
+                    # model.layers[index].biases = model.layers[index].biases - learning_rate * np.sum(initial_derivatives , axis= 0)
                     # to go the next layer update the initial derivatives to contain the derivatives with respect to the inputs of that layer
                     # this is important so that we can update the weights of the previous layer
                     initial_derivatives = np.matmul(initial_derivatives,model.layers[index].weights.T)
@@ -231,10 +221,12 @@ class BatchGradientDescent:
 
                 # what we want to do it multiply each initial derivative with the corresponding input and then take the average
                 # this will give us the same thing but faster
-                model.layers[index].weights -= learning_rate * (1/ initial_derivatives.shape[0] * np.matmul(model.outputs[index].T,initial_derivatives))
+                # model.layers[index].weights -= learning_rate * (1/ initial_derivatives.shape[0] * np.matmul(model.outputs[index].T,initial_derivatives))
 
                 # we have to multiply the initial derivatives by 1 to get the bias gradient and then average so that's we are doing
-                model.layers[index].biases -= learning_rate * (1/ initial_derivatives.shape[0] * np.sum(initial_derivatives , axis= 0))
+                # model.layers[index].biases -= learning_rate * (1/ initial_derivatives.shape[0] * np.sum(initial_derivatives , axis= 0))
+
+                model.layers[index].backward(initial_derivatives,learning_rate)
 
 
 

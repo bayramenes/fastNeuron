@@ -23,7 +23,7 @@ class BinaryCrossEntropy:
     
     
     
-    def initial_derivative(self,output:np.ndarray,labels:np.ndarray) -> np.ndarray:
+    def derivative(self,output:np.ndarray,labels:np.ndarray) -> np.ndarray:
         """
         initial derivative to start backprop this will be the multiplicaition  of the derivative of the loss function and activation function of the last layer
         :return float representing the initial derivative
@@ -31,7 +31,7 @@ class BinaryCrossEntropy:
         for a more involved and math heavy derivation check out this
         https://math.stackexchange.com/questions/2503428/derivative-of-binary-cross-entropy-why-are-my-signs-not-right
         """
-        return output - labels
+        return (output - labels) / (output * (1 - output) + 1e-100)
 
 
 
@@ -54,7 +54,7 @@ class CategoricalCrossEntropy:
         return np.sum(-labels * np.log(output + 1e-15))
 
     
-    def initial_derivative(self,output:np.ndarray , labels:np.ndarray) -> np.ndarray:
+    def derivative(self,output:np.ndarray , labels:np.ndarray) -> np.ndarray:
         """
         initial derivative to start backprop this will be the multiplicaition  of the derivative of the loss function and activation function of the last layer
         :return float representing the initial derivative
@@ -62,7 +62,9 @@ class CategoricalCrossEntropy:
         for a more involved and math heavy derivation check out this
         https://towardsdatascience.com/derivative-of-the-softmax-function-and-the-categorical-cross-entropy-loss-ffceefc081d1
         """
-        return output - labels
+
+        return labels / output
+
 
 
 
@@ -74,7 +76,7 @@ class MSE:
         return (1/2) * np.mean(np.square(output - labels))
 
     
-    def initial_derivative(self,output:np.ndarray,labels:np.ndarray) -> np.ndarray:
+    def derivative(self,output:np.ndarray,labels:np.ndarray) -> np.ndarray:
         """
         initial derivative to start backprop this will be the multiplicaition  of the derivative of the loss function and activation function of the last layer
         :return float representing the initial derivative
