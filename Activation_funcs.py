@@ -1,8 +1,5 @@
 # this is a file containing the activation functions we will be using 
 
-
-
-from typing import Any
 import numpy as np
 
 
@@ -20,6 +17,9 @@ class sigmoid:
     
     def derivative(self):
         return self.output * (1 - self.output + 1e-100)
+    
+    def predict(self):
+        return (self.output >= 0.5).astype(int)
     
 
 
@@ -39,6 +39,10 @@ class tanh:
         return 1 - (self.output ** 2)
     
 
+    def predict(self):
+        return (self.output >= 0).astype(int)
+    
+
 
 class relu:
     def __init__(self,leak=0) -> None:
@@ -53,19 +57,28 @@ class relu:
         return self.output
     
     def derivative(self):
-
         return np.where(self.output > 0, 1, self.leak)
+    
+    def predict(self):
+        return self.output
     
 
 class linear:
+
+    def __init__(self) -> None:
+        self.output = None
     def __repr__(self) -> str:
         return "Linear"
     def __call__(self,z):
-        return z
+        self.output = z
+        return self.output
     
     def derivative(self):
         return 1
     
+    def predict(self):
+        return self.output
+
     
 
 class softmax:
@@ -88,6 +101,12 @@ class softmax:
         # the derivative of categorical cross entropy handle the rest
         return 1
     
+    def predict(self):
+        z = np.zeros(self.output.shape)
+        # get the index of the maximum value in each row and assign it the value 1 others will be 0
+        z[np.arange(self.output.shape[0]),np.argmax(self.output , axis=1)] = 1
+        return z
+        
 
-
+    
     

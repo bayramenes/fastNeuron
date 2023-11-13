@@ -42,7 +42,7 @@ class MiniBatchGradientDescent:
 
 
         batch_number = np.floor(X.shape[0] / batch_size)
-        COSTS = []
+        costs = []
 
         mini_batches = np.array_split(X,batch_number)
         mini_batch_labels = np.array_split(Y,batch_number)
@@ -78,12 +78,16 @@ class MiniBatchGradientDescent:
 
             if epoch % (epochs // 100) == 0:
                 cost = loss(model.forward(X),Y)
-                COSTS.append(cost)
+                costs.append(cost)
             if epoch % (epochs // 10) == 0:
-                accuracy = ( (X.shape[0] - np.sum((model.predict(X) != Y).astype(int))) / X.shape[0] ) * 100
+                accuracy = model.evaluate(model.predict(X),Y)
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
-        return model,COSTS
+        cost = loss(model.forward(X),Y)
+        accuracy = model.evaluate(model.predict(X),Y)
+        print(f" cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
+
+        return model,costs
 
     def __repr__(self) -> str:
         return "Mini-Batch Gradient Descent"
@@ -120,8 +124,8 @@ class StochasticGradientDescent:
             for i in range(X.shape[0]):
                 model.outputs = []
                 output = model.forward(X[i].reshape(1,X.shape[1]))
-                initial_derivatives = model.layers[-1].activation.derivative() * loss.derivative(output,Y[i].reshape(1,1))
-                # initial_derivatives = loss.d(output,Y[i].reshape(1,1))
+                initial_derivatives = model.layers[-1].activation.derivative() * loss.derivative(output,Y[i].reshape(1,Y.shape[1]))
+
 
                 # since this is called backpropagation we have to go backwards through the layers
                 for index in range(len(model.layers) - 1 , -1 ,-1):
@@ -143,13 +147,13 @@ class StochasticGradientDescent:
                 cost = loss(model.forward(X),Y)
                 costs.append(cost)
             if epoch % (epochs // 10) == 0:
-                accuracy = ( (X.shape[0] - np.sum((model.predict(X) != Y).astype(int))) / X.shape[0] ) * 100
+                accuracy = model.evaluate(model.predict(X),Y)
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
 
 
         cost = loss(model.forward(X),Y)
-        accuracy = ( (X.shape[0] - np.sum((model.predict(X) != Y).astype(int))) / X.shape[0] ) * 100
+        accuracy = model.evaluate(model.predict(X),Y)
         print(f" cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
         return model,costs
@@ -197,7 +201,8 @@ class BatchGradientDescent:
                 cost = loss(output,Y)
                 COSTS.append(cost)
             if epoch % (epochs // 10) == 0:
-                accuracy = ((X.shape[0] - np.sum(((output >= 0.5).astype(int) != Y).astype(int))) / X.shape[0] ) * 100
+                # accuracy = ((X.shape[0] - np.sum(((output >= 0.5).astype(int) != Y).astype(int))) / X.shape[0] ) * 100
+                accuracy = model.evaluate(model.predict(X),Y)
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
             # get the initial derivatives depending ont he loss function
@@ -220,7 +225,7 @@ class BatchGradientDescent:
                 initial_derivatives *= model.layers[index-1].activation.derivative()
 
 
-        accuracy = ((X.shape[0] - np.sum(((output >= 0.5).astype(int) != Y).astype(int))) / X.shape[0] ) * 100
+        accuracy = model.evaluate(model.predict(X),Y)
         print(f" cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
         return model,COSTS

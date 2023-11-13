@@ -75,6 +75,16 @@ class neural_network:
 
     def predict(self, X: np.ndarray):
         """
-        given an input dataset provide the output of the model
+        given an input testing sampel provide the predictions of the model
         """
-        return (self.forward(X) >= 0.5).astype(int)
+        # feed the testing data to the model
+        self.forward(X)
+        return self.layers[-1].activation.predict()
+    
+    def evaluate(self,predictions:np.ndarray,labels:np.ndarray):
+        """
+        evaluate the model by providing the accuracy of the predictions
+        sum all correct predictions and divide by the number of samples to get the accuracy
+        """
+        return (np.sum(np.all(predictions == labels,axis=1)) / predictions.shape[0]) * 100
+
