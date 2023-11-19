@@ -46,6 +46,19 @@ class MiniBatchGradientDescent:
 
         mini_batches = np.array_split(X,batch_number)
         mini_batch_labels = np.array_split(Y,batch_number)
+        # these variabels will be used for progress printing purposes
+        if epochs < 100:
+            cost_calculator = 1
+            if epochs < 10:
+                printer = 1
+            else:
+                printer = epochs//10
+        elif epochs < 1000:
+            cost_calculator = epochs//10
+            printer = epochs//10
+        else:
+            cost_calculator = epochs//100
+            printer = epochs//10
 
         for epoch in range(epochs):
 
@@ -76,10 +89,10 @@ class MiniBatchGradientDescent:
                     # then we will multiply by the derivative of the activation function of the previous layer whatever it maybe
                     initial_derivatives *= model.layers[index-1].activation.derivative()
 
-            if epoch % (epochs // 100) == 0:
+            if epoch % cost_calculator == 0:
                 cost = loss(model.forward(X),Y)
                 costs.append(cost)
-            if epoch % (epochs // 10) == 0:
+            if epoch % printer == 0:
                 accuracy = model.evaluate(model.predict(X),Y)
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
@@ -118,6 +131,22 @@ class StochasticGradientDescent:
         
         costs=[]
 
+
+
+        # these variabels will be used for progress printing purposes
+        if epochs < 100:
+            cost_calculator = 1
+            if epochs < 10:
+                printer = 1
+            else:
+                printer = epochs//10
+        elif epochs < 1000:
+            cost_calculator = epochs//10
+            printer = epochs//10
+        else:
+            cost_calculator = epochs//100
+            printer = epochs//10
+
         # do as many epochs as needed
         for epoch in range(epochs):
             # go over all of the training examples in each epoch
@@ -143,10 +172,10 @@ class StochasticGradientDescent:
 
 
             
-            if epoch % (epochs // 100) == 0:
+            if epoch % cost_calculator == 0:
                 cost = loss(model.forward(X),Y)
                 costs.append(cost)
-            if epoch % (epochs // 10) == 0:
+            if epoch % printer == 0:
                 accuracy = model.evaluate(model.predict(X),Y)
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
@@ -189,6 +218,23 @@ class BatchGradientDescent:
         #  i chose to use iterations for performance purposes...
 
         COSTS = []
+
+
+
+        # these variabels will be used for progress printing purposes
+        if epochs < 100:
+            cost_calculator = 1
+            if epochs < 10:
+                printer = 1
+            else:
+                printer = epochs//10
+        elif epochs < 1000:
+            cost_calculator = epochs//10
+            printer = epochs//10
+        else:
+            cost_calculator = epochs//100
+            printer = epochs//10
+
         for epoch in range(epochs):
 
 
@@ -197,11 +243,10 @@ class BatchGradientDescent:
             # this is the output of the neural network which is the last one in the list
             output = model.forward(X)
 
-            if epoch % (epochs // 100) == 0:
+            if epoch % cost_calculator == 0:
                 cost = loss(output,Y)
                 COSTS.append(cost)
-            if epoch % (epochs // 10) == 0:
-                # accuracy = ((X.shape[0] - np.sum(((output >= 0.5).astype(int) != Y).astype(int))) / X.shape[0] ) * 100
+            if epoch % printer  == 0:
                 accuracy = model.evaluate(model.predict(X),Y)
                 print(f"{epoch} cost : {cost} accuracy : {round(accuracy,ndigits=2)}%")
 
