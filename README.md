@@ -25,7 +25,7 @@ pip install nn-in-secs
 
 ## What can you do with it
 
-Currently you can deploy any feed-forward neural network with any size2.
+Currently you can deploy any feed-forward neural network with any size.
 
 You can choose what optimizer to use ,which activations functions ,which cost function...
 
