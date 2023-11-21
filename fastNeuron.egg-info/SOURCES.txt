@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+fastNeuron/Activation_funcs.py
+fastNeuron/Optimizers.py
+fastNeuron/layers.py
+fastNeuron/loss_funcs.py
+fastNeuron/network.py
+fastNeuron.egg-info/PKG-INFO
+fastNeuron.egg-info/SOURCES.txt
+fastNeuron.egg-info/dependency_links.txt
+fastNeuron.egg-info/requires.txt
+fastNeuron.egg-info/top_level.txt

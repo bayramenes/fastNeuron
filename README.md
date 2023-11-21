@@ -1,5 +1,5 @@
-# nn-in-secs
-![Alt text](image.png)
+# fastNeuron
+![Alt text](https://miro.medium.com/v2/resize:fit:875/0*70-ltFvmCLv0Ifyb.png)
 
 ## what is it ?
 
@@ -14,12 +14,12 @@ i am a firm believer that building complex topics and ideas from scratch gives y
 
 Mac / Linux
 ```
-pip3 install nn-in-secs
+pip3 install fastNeuron
 ```
 
 Windows
 ```
-pip install nn-in-secs
+pip install fastNeuron
 ```
 
 

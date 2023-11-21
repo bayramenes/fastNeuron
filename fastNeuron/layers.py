@@ -6,7 +6,7 @@
 
 # import dependencies
 import numpy as np
-import Activation_funcs as activations
+import fastNeuron.Activation_funcs as activations
 
 
 

@@ -1,8 +1,11 @@
 # this is a class that initiates a neural network and gives high level control over
 # it
-import Optimizers
-import loss_funcs as losses
-from layers import Dense
+
+
+
+import fastNeuron.Optimizers as Optimizers
+import fastNeuron.loss_funcs as losses
+from fastNeuron.layers import Dense
 import numpy as np
 
 

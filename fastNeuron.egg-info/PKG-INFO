@@ -1,0 +1,52 @@
+Metadata-Version: 2.1
+Name: fastNeuron
+Version: 1.1
+Summary: Create and Deploy Neural Networks in seconds fully in python!!
+Author-email: Enes Bayram <bayram.enes1928@gmail.com>
+Maintainer-email: Enes Bayram <bayram.enes1928@gmail.com>
+License: MIT License
+Project-URL: Repository, https://github.com/bayramenes/fastNeuron
+Keywords: software development,neural networks,machine learning,artificial intelligence,deep learning,AI,ML
+Classifier: Programming Language :: Python
+Classifier: Operating System :: OS Independent
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
+Requires-Dist: importlib-metadata
+
+# fastNeuron
+![Alt text](https://miro.medium.com/v2/resize:fit:875/0*70-ltFvmCLv0Ifyb.png)
+
+## what is it ?
+
+this is a hobby project to build a small framework to create and deploy neural networks quickly...
+
+## how it all started ?
+this is a project that i intended to make as an attempt to understand neural network and machine learning better...
+
+i am a firm believer that building complex topics and ideas from scratch gives you a solid ground and grasp of the concepts...
+
+## installation
+
+Mac / Linux
+```
+pip3 install fastNeuron
+```
+
+Windows
+```
+pip install fastNeuron
+```
+
+
+## What can you do with it
+
+Currently you can deploy any feed-forward neural network with any size.
+
+You can choose what optimizer to use ,which activations functions ,which cost function...
+
+
+## NOTE: i am by no means an expert so if you have any improvements or found any bugs in the code please reach out!!
